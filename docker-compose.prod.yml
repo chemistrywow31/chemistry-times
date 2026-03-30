@@ -1,0 +1,28 @@
+version: "3.3"
+
+services:
+  app:
+    image: ${REGISTRY:-registry.example.com}/chemistry-times:${IMAGE_TAG}
+    ports:
+      - "17171:17171"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+      - DB_NAME=chemistrytimes
+      - PORT=17171
+      - GIN_MODE=release
+    volumes:
+      - ./web/static/articles:/app/web/static/articles
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - /data/mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped

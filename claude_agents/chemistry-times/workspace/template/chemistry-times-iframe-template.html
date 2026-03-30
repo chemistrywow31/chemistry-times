@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+  <title>ChemistryTimes 化學時報 — 2026.03.17</title>
+  <style>
+    /* ========================================
+       ChemistryTimes 化學時報 — Issue #000
+       2026-03-17 | NYT Newspaper Style
+       (Iframe-embedded article layout)
+       ======================================== */
+
+    /* --- Reset & Base --- */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* NYT-inspired monochrome palette */
+      --bg-primary:     #fafaf8;
+      --bg-secondary:   #f5f4f2;
+      --text-primary:   #333333;
+      --text-secondary: #555555;
+      --text-muted:     #999999;
+      --text-inverse:   #333333;
+      --border-color:   #e2e2e2;
+      --border-light:   #eeeeee;
+      --border-heavy:   #121212;
+      --accent:         #121212;
+      --link-color:     #326891;
+      --shadow-sm:      none;
+      --shadow-md:      none;
+      --shadow-lg:      none;
+
+      /* Typography */
+      --font-serif-tc:  'Huninn', 'Noto Sans TC', sans-serif;
+      --font-sans-tc:   'Huninn', 'Noto Sans TC', sans-serif;
+      --font-sans-en:   'Huninn', 'Noto Sans TC', sans-serif;
+      --font-serif-en:  'Huninn', 'Noto Sans TC', sans-serif;
+      --font-mono:      "SF Mono", "Fira Code", Consolas, monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans-tc);
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    body[data-lang="en"] {
+      font-family: var(--font-sans-en);
+    }
+
+    /* --- Article Layout (flex: TOC + content) --- */
+    .article-layout {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0px 24px;
+    }
+
+    /* --- Sticky Margin TOC --- */
+    .article-toc {
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+      width: 160px;
+      min-width: 160px;
+      margin-right: 48px;
+      padding-top: 48px;
+    }
+
+    .toc-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #999;
+      letter-spacing: 1.5px;
+      padding: 12px 0 6px 0;
+      font-family: var(--font-sans-en);
+    }
+
+    .toc-item {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      padding: 6px 0 6px 12px;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      line-height: 1.4;
+      font-family: var(--font-sans-tc);
+    }
+
+    .toc-item:hover {
+      color: #333;
+    }
+
+    .toc-item.active {
+      color: #121212;
+      border-left-color: #326891;
+    }
+
+    /* --- Article Content --- */
+    .article-content {
+      max-width: 720px;
+      width: 100%;
+    }
+
+    /* --- Main wrapper (legacy, kept for footer spacing) --- */
+    .main {
+      background: var(--bg-primary);
+    }
+
+    /* --- Bilingual content switching --- */
+    .article-zh-tw,
+    .article-en {
+      display: none;
+    }
+
+    body[data-lang="zh-tw"] .article-zh-tw { display: block; }
+    body[data-lang="en"] .article-en { display: block; }
+
+    /* CN/EN elements in TOC */
+    .toc-zh-tw, .toc-en { display: none; }
+    body[data-lang="zh-tw"] .toc-zh-tw { display: block; }
+    body[data-lang="zh-tw"] .toc-en { display: none; }
+    body[data-lang="en"] .toc-zh-tw { display: none; }
+    body[data-lang="en"] .toc-en { display: block; }
+
+    /* Also handle inline toc-zh-tw/toc-en spans */
+    span.toc-zh-tw, span.toc-en { display: none; }
+    body[data-lang="zh-tw"] span.toc-zh-tw { display: inline; }
+    body[data-lang="en"] span.toc-en { display: inline; }
+
+    /* --- Section Divider --- */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0 24px;
+      padding-bottom: 10px;
+      border-bottom: 3px double var(--border-heavy);
+    }
+
+    .section-divider h2 {
+      font-family: var(--font-serif-en);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    body[data-lang="zh-tw"] .section-divider h2 {
+      font-family: var(--font-serif-tc);
+    }
+
+    .section-divider .section-line {
+      flex: 1;
+      height: 0;
+      background: transparent;
+    }
+
+    .section-divider .section-badge {
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-family: var(--font-sans-en);
+    }
+
+    /* --- Article Card --- */
+    .article-card {
+      background: var(--bg-primary);
+      border-radius: 3px;
+      box-shadow: none;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      overflow: visible;
+      transition: none;
+    }
+
+    .article-card:hover {
+      box-shadow: none;
+    }
+
+    .article-card-header {
+      padding: 0 0 0;
+    }
+
+    .article-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-tag.competitor {
+      color: var(--text-muted);
+    }
+
+    .article-tag.tech {
+      color: var(--text-muted);
+    }
+
+    .article-tag.github {
+      color: var(--text-muted);
+    }
+
+    .article-tag-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .article-tag.competitor .article-tag-dot { background: var(--text-muted); }
+    .article-tag.tech .article-tag-dot { background: var(--text-muted); }
+    .article-tag.github .article-tag-dot { background: var(--text-muted); }
+
+    .article-card-body {
+      padding: 0;
+    }
+
+    /* --- Article Content (bilingual) --- */
+    .article-headline {
+      font-family: var(--font-serif-en);
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--accent);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    body[data-lang="zh-tw"] .article-headline {
+      font-family: var(--font-serif-tc);
+    }
+
+    .article-deck {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .article-body {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .article-body p {
+      margin-bottom: 16px;
+    }
+
+    .article-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .article-body h4 {
+      font-family: var(--font-serif-en);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    body[data-lang="zh-tw"] .article-body h4 {
+      font-family: var(--font-serif-tc);
+    }
+
+    .article-body h4:first-child {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    /* --- Perspective --- */
+    .article-perspective {
+      margin-top: 24px;
+      padding: 20px 24px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent);
+      border-radius: 3px;
+    }
+
+    .article-perspective-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 8px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-perspective p {
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* --- Source Attribution --- */
+    .article-sources {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .article-sources-label {
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-sources p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .article-sources a {
+      color: var(--link-color);
+      text-decoration: none;
+    }
+
+    .article-sources a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Freshness Tags --- */
+    .freshness-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 400;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: var(--font-sans-en);
+    }
+
+    .freshness-tag.breaking {
+      background: #ffffff;
+      color: #333333;
+      border: 1px solid #333333;
+    }
+
+    .freshness-tag.recent {
+      background: #ffffff;
+      color: #555555;
+      border: 1px solid #999999;
+    }
+
+    .freshness-tag.not-breaking {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* --- Footer --- */
+    .page-footer {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 32px 48px;
+      margin-top: 0;
+      border-top: 3px double var(--border-heavy);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-serif-en);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--accent);
+    }
+
+    .footer-brand span {
+      font-family: var(--font-sans-tc);
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-left: 12px;
+    }
+
+    .footer-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: right;
+      font-family: var(--font-sans-en);
+    }
+
+    .footer-meta p {
+      margin-bottom: 2px;
+    }
+
+    /* --- News Brief (compact card) --- */
+    .brief-card {
+      background: var(--bg-primary);
+      border-radius: 3px;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      padding: 24px 0;
+      margin-bottom: 0;
+      transition: none;
+    }
+
+    .brief-card:hover {
+      box-shadow: none;
+    }
+
+    .brief-card .article-tag {
+      margin-bottom: 8px;
+    }
+
+    .brief-headline {
+      font-family: var(--font-serif-en);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--accent);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    body[data-lang="zh-tw"] .brief-headline {
+      font-family: var(--font-serif-tc);
+    }
+
+    .brief-summary {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .brief-card .article-sources {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .brief-card .article-perspective {
+      margin-top: 16px;
+    }
+
+    /* --- AI Badge --- */
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      margin-top: 8px;
+      font-family: var(--font-sans-en);
+    }
+
+    .ai-badge .ai-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* --- Pillar Badge (kept for article tags) --- */
+    .pillar-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .pillar-badge.competitor {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .pillar-badge.tech {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 1279px) {
+      .article-toc {
+        display: none;
+      }
+
+      .article-content {
+        max-width: 100%;
+      }
+
+      .page-footer {
+        padding: 24px 20px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .footer-meta {
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 1280px) and (max-width: 1439px) {
+      .article-content {
+        max-width: 640px;
+      }
+    }
+
+    /* --- Utility --- */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* --- Print --- */
+    @media print {
+      .article-toc {
+        display: none !important;
+      }
+
+      .article-card {
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body data-lang="zh-tw">
+
+  <!-- ============ ARTICLE LAYOUT ============ -->
+  <div class="article-layout">
+
+    <!-- Sticky Margin TOC -->
+    <nav class="article-toc" role="navigation" aria-label="Table of contents">
+
+      <!-- === Pillar: Tech & AI === -->
+      <div class="toc-label toc-zh-tw">科技趨勢</div>
+      <div class="toc-label toc-en">Tech &amp; AI</div>
+
+      <a href="#article-1" class="toc-item toc-zh-tw">GPT-5.4 縮小版來了！Mini 和 Nano 雙殺</a>
+      <a href="#article-1" class="toc-item toc-en">OpenAI Shrinks GPT-5.4 to Mini and Nano</a>
+
+      <a href="#article-2" class="toc-item toc-zh-tw">AI 七巨頭掏 3.75 億台幣，聯手拯救開源安全</a>
+      <a href="#article-2" class="toc-item toc-en">Seven AI Rivals Pool $12.5M for Open Source Security</a>
+
+      <!-- === News Briefs === -->
+      <div class="toc-label toc-zh-tw">快訊</div>
+      <div class="toc-label toc-en">Briefs</div>
+
+      <a href="#article-3" class="toc-item toc-zh-tw">Preply 打出「反 Duolingo」牌，AI 功能卻悄悄跟上</a>
+      <a href="#article-3" class="toc-item toc-en">Preply Plays Anti-AI While Quietly Shipping AI Features</a>
+
+      <a href="#article-4" class="toc-item toc-zh-tw">Mastercard 自建 AI 模型，用數十億筆交易抓詐騙</a>
+      <a href="#article-4" class="toc-item toc-en">Mastercard Builds Its Own AI Model</a>
+
+      <a href="#article-5" class="toc-item toc-zh-tw">GitNexus 爆紅：零伺服器程式碼知識圖譜引擎</a>
+      <a href="#article-5" class="toc-item toc-en">GitNexus Hits GitHub Trending</a>
+
+      <a href="#article-6" class="toc-item toc-zh-tw">Claude 終於有記憶了，跨對話記住你是誰</a>
+      <a href="#article-6" class="toc-item toc-en">Claude Gets Memory</a>
+
+    </nav>
+
+    <!-- Article Content -->
+    <div class="article-content">
+
+      <!-- ============================
+           PILLAR: TECH & AI
+           ============================ -->
+      <div class="section-divider" id="pillar-tech">
+        <h2>
+          <span class="toc-zh-tw">科技趨勢</span>
+          <span class="toc-en">Tech &amp; AI Trends</span>
+        </h2>
+        <div class="section-line"></div>
+        <div class="section-badge">Deep Dives</div>
+      </div>
+
+      <!-- ===== ARTICLE 1 — Deep Dive: GPT-5.4 Mini/Nano ===== -->
+      <article class="article-card" id="article-1">
+        <div class="article-card-header">
+          <div class="article-tag tech">
+            <span class="article-tag-dot"></span>
+            <span class="toc-zh-tw">科技趨勢</span>
+            <span class="toc-en">Tech &amp; AI</span>
+            <span class="freshness-tag breaking">Breaking</span>
+          </div>
+        </div>
+        <div class="article-card-body">
+
+          <!-- Chinese Version -->
+          <div class="article-zh-tw">
+            <h3 class="article-headline">GPT-5.4 縮小版來了！Mini 和 Nano 雙殺，免費仔也能用旗艦</h3>
+            <p class="article-deck" id="article-1-p-1">OpenAI 今日推出 GPT-5.4 Mini 與 Nano，把旗艦級推理能力塞進最小最快的封裝，Mini 跑分直追 GPT-5.4 本尊、速度快 2 倍以上，Nano 主打高量低價。</p>
+            <div class="article-body">
+              <p id="article-1-p-2">等了 12 天，OpenAI 今天把 GPT-5.4 的平民版端上桌——同時推出 Mini 和 Nano 兩個小尺寸版本，分別定位「高性能編程」和「大量呼叫省荷包」。</p>
+              <p id="article-1-p-3">GPT-5.4 Mini 的定位很明確：它是目前 GPT-5 系列裡最快的編程模型，跑分在 coding、推理、多模態三個面向都超越前代 GPT-5 Mini，而且速度超過 2 倍。在多項 benchmark 上，它已經逼近 GPT-5.4 本尊的成績——等於你花小錢就能拿到接近旗艦的火力。OpenAI 同步宣布 GPT-5 Thinking Mini 將在 30 天內退役，Mini 的世代交替就在此刻。</p>
+              <p id="article-1-p-4">Nano 走的是另一條路線：極致成本優化。對那些需要大量 API 呼叫但每次任務不需要最頂級推理的場景——例如分類、摘要、批次處理——Nano 提供了一個「夠用就好」的選擇，定價打到骨折。</p>
+              <p id="article-1-p-5">另一個值得注意的更新：ChatGPT Enterprise 和 EDU 版本同步上線了全新的模型選擇器，依據不同方案（Plus、Pro、Business、Enterprise、Edu）智慧推薦 Instant、Thinking、Pro 三類模型，還加入了自動切換至思考模式的設定。這代表 OpenAI 正在把模型選擇的複雜度從用戶端移到平台端，讓使用者不需要自己判斷「這個任務該用哪個模型」。</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">化學觀點</div>
+              <p id="article-1-p-6">GPT-5.4 Mini 的出現，直接打破了「旗艦才能做正事」的舊框架。ChemistryTimes 的 AI 應用場景——教學對話、內容生成、作文批改——其實大部分不需要完整旗艦的火力，Mini 等級就綽綽有餘。工程團隊應該馬上評估：目前跑在旗艦模型上的哪些任務，可以無痛降級到 Mini，省下來的成本直接拿去擴大 AI 功能覆蓋率。這不是降級，是升級策略。</p>
+            </div>
+          </div>
+
+          <!-- English Version -->
+          <div class="article-en">
+            <h3 class="article-headline">OpenAI Shrinks GPT-5.4 to Mini and Nano — and the Price Floor Just Dropped</h3>
+            <p class="article-deck">The smallest GPT-5.4 variants ship today, making flagship-grade reasoning accessible at a fraction of the cost.</p>
+            <div class="article-body">
+              <p id="article-1-p-7">OpenAI shipped GPT-5.4 Mini and Nano on Monday, completing the model family's expansion from flagship to lightweight.</p>
+              <p id="article-1-p-8">GPT-5.4 Mini is built for speed and coding performance. It outperforms GPT-5 Mini on coding, reasoning, and multimodal tasks while running more than twice as fast. On several benchmarks, it approaches the full GPT-5.4 — meaning developers can get near-flagship quality at significantly lower cost. OpenAI confirmed that GPT-5 Thinking Mini will be retired as a selectable option within 30 days.</p>
+              <p id="article-1-p-9">Nano occupies the opposite end: maximum throughput at minimum cost. It's designed for high-volume, lower-complexity tasks — classification, summarization, batch processing — where speed and price matter more than peak reasoning depth.</p>
+              <p id="article-1-p-10">There's also a quiet infrastructure change worth noting. ChatGPT Enterprise and EDU accounts received a streamlined model picker that presents plan-aware options — Instant, Thinking, and Pro models — along with an Auto-switch setting that selects the reasoning mode for you. OpenAI is abstracting away model selection, moving the complexity from the user to the platform.</p>
+              <p id="article-1-p-11">The pattern is clear: OpenAI's strategy isn't just about building the most capable model. It's about filling every price-performance tier so that no workload has a reason to leave the ecosystem. Mini handles serious coding work. Nano handles the long tail. The flagship handles everything else. Three models, one API, zero gaps.</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">The ChemistryTimes Take</div>
+              <p id="article-1-p-12">Mini changes the economics for us. Most of ChemistryTimes's AI workloads — conversational tutoring, content generation, essay feedback — don't require the full GPT-5.4. Mini's coding and reasoning benchmarks suggest it can handle these tasks at a fraction of the cost. Our engineering team should run a structured evaluation this week: identify which production workloads currently on flagship models can shift to Mini without quality degradation. The cost savings fund the next wave of AI feature development.</p>
+            </div>
+          </div>
+
+          <!-- Source Attribution -->
+          <div class="article-sources">
+            <div class="article-sources-label">
+              <span class="toc-zh-tw">來源</span>
+              <span class="toc-en">Sources</span>
+            </div>
+            <p><a href="https://releasebot.io/updates/openai" target="_blank" rel="noopener">OpenAI Release Notes</a></p>
+            <p><a href="https://www.labla.org/latest-ai-model-releases-past-24-hours/ai-model-releases-march-17-2026-claude-gets-memory-microsoft-pulls-back-and-the-race-continues/" target="_blank" rel="noopener">Labla.org AI Model Releases</a></p>
+          </div>
+        </div>
+      </article>
+      <!-- ===== END ARTICLE 1 ===== -->
+
+      <!-- ===== ARTICLE 2 — Deep Dive: Linux Foundation OSS Security ===== -->
+      <article class="article-card" id="article-2">
+        <div class="article-card-header">
+          <div class="article-tag tech">
+            <span class="article-tag-dot"></span>
+            <span class="toc-zh-tw">科技趨勢</span>
+            <span class="toc-en">Tech &amp; AI</span>
+            <span class="freshness-tag breaking">Breaking</span>
+          </div>
+        </div>
+        <div class="article-card-body">
+
+          <!-- Chinese Version -->
+          <div class="article-zh-tw">
+            <h3 class="article-headline">AI 七巨頭掏 3.75 億台幣，聯手拯救開源安全</h3>
+            <p class="article-deck" id="article-2-p-1">Anthropic、AWS、GitHub、Google、Google DeepMind、Microsoft、OpenAI 七大科技公司今日聯合宣布，向 Linux 基金會捐贈 1,250 萬美元，用於強化開源軟體安全防線。</p>
+            <div class="article-body">
+              <p id="article-2-p-2">平常打得你死我活的七家公司，今天居然站在同一邊了——而且站的位置不是模型比分榜，是開源安全。</p>
+              <p id="article-2-p-3">Linux 基金會今天宣布，Anthropic、AWS、GitHub、Google、Google DeepMind、Microsoft、OpenAI 聯合捐贈了 1,250 萬美元（約 3.75 億台幣），資金將透過 Alpha-Omega 和 OpenSSF（Open Source Security Foundation）兩個安全計畫分配。</p>
+              <p id="article-2-p-4">為什麼現在要做這件事？因為 AI 工具正在以前所未有的速度自動產生安全漏洞報告，這些報告淹沒了開源專案的維護者。絕大多數開源專案是由志工團隊在維護的，他們本來就沒有足夠的人力和預算來處理安全問題，現在 AI 生成的報告量暴增，讓情況雪上加霜。Alpha-Omega 的共同創辦人 Michael Winser 說得很直接：「透過資助審計和在生態系中直接嵌入安全專家，我們已經證明了精準投資是有效的。」</p>
+              <p id="article-2-p-5">這筆錢具體會用來做什麼？直接跟開源維護者合作、開發以維護者為中心的 AI 安全輔助工具、打造可持續的策略來幫維護者應對日益升級的安全需求。換句話說，不是叫維護者自己想辦法，而是把專業資源送到他們手上。</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">化學觀點</div>
+              <p id="article-2-p-6">這則新聞看起來跟 ChemistryTimes 沒有直接關係，但底層邏輯跟我們息息相關。ChemistryTimes 的技術棧從伺服器到前端，大量依賴開源套件。如果這些套件的安全維護跟不上 AI 時代的攻擊速度，我們的供應鏈安全就會出漏洞。這 1,250 萬美元的投入，間接就是在保護我們每天用的工具。工程團隊應該趁這個機會重新檢視一次依賴鏈的安全掃描流程，確保我們有在追蹤上游的安全更新。</p>
+            </div>
+          </div>
+
+          <!-- English Version -->
+          <div class="article-en">
+            <h3 class="article-headline">Seven AI Rivals Pool $12.5 Million to Shore Up Open Source Security</h3>
+            <p class="article-deck">Anthropic, AWS, GitHub, Google, DeepMind, Microsoft, and OpenAI fund the Linux Foundation to help maintainers fight AI-generated security noise.</p>
+            <div class="article-body">
+              <p id="article-2-p-7">Companies that spend most of their time competing just agreed on something: the open source software they all depend on is dangerously under-defended.</p>
+              <p id="article-2-p-8">The Linux Foundation announced Monday that seven major tech companies — Anthropic, AWS, GitHub, Google, Google DeepMind, Microsoft, and OpenAI — committed $12.5 million to strengthen open source security. The funding flows through Alpha-Omega and the Open Source Security Foundation (OpenSSF), two security initiatives housed within the Linux Foundation.</p>
+              <p id="article-2-p-9">The problem they're solving is specific and increasingly urgent. AI-powered vulnerability detection tools now discover security issues far faster than volunteer maintainers can triage and fix them. The volume of automated security reports is overwhelming projects that run on donated time and shoestring budgets. The very AI capabilities these companies sell are, inadvertently, creating a burden that threatens the ecosystem all of them rely on.</p>
+              <p id="article-2-p-10">Alpha-Omega co-founder Michael Winser framed it plainly: "By funding audits and embedding security experts directly into the ecosystem, we've proven that targeted investment works."</p>
+              <p id="article-2-p-11">The $12.5 million will fund direct collaboration with open source maintainers, development of AI-assisted security tools designed for maintainers rather than attackers, and sustainable strategies to help volunteer-run projects manage escalating security demands.</p>
+              <p id="article-2-p-12">What makes this notable isn't the dollar amount — $12.5 million is a rounding error for these companies. It's the cooperation. Anthropic and OpenAI are in an active legal dispute over Pentagon AI contracts. Google and Microsoft compete on every AI benchmark. Yet they signed onto the same check because supply chain risk doesn't respect competitive boundaries. Every one of these companies ships products built on open source dependencies. A vulnerability in a widely used Python package doesn't care which AI model found it.</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">The ChemistryTimes Take</div>
+              <p id="article-2-p-13">ChemistryTimes's tech stack runs on open source from top to bottom — Node.js, Go modules, Python packages, frontend frameworks. The security of those dependencies isn't someone else's problem; it's ours. This $12.5 million injection into maintainer support is welcome, but it doesn't replace our own responsibility. Engineering should use this as a prompt to audit our dependency scanning pipeline: are we tracking upstream security advisories in real time? Are we patching critical vulnerabilities within the recommended windows? The AI-generated security report flood that prompted this funding will eventually reach our own open source contributions too.</p>
+            </div>
+          </div>
+
+          <!-- Source Attribution -->
+          <div class="article-sources">
+            <div class="article-sources-label">
+              <span class="toc-zh-tw">來源</span>
+              <span class="toc-en">Sources</span>
+            </div>
+            <p><a href="https://www.helpnetsecurity.com/2026/03/17/linux-foundation-12-5-million-grants/" target="_blank" rel="noopener">Help Net Security</a></p>
+            <p><a href="https://fortune.com/2026/03/10/google-openai-employees-back-anthropic-legal-fight-military-use-of-ai/" target="_blank" rel="noopener">Fortune</a></p>
+          </div>
+        </div>
+      </article>
+      <!-- ===== END ARTICLE 2 ===== -->
+
+
+      <!-- ============================
+           NEWS BRIEFS / 快訊
+           ============================ -->
+      <div class="section-divider" id="pillar-briefs">
+        <h2>
+          <span class="toc-zh-tw">快訊</span>
+          <span class="toc-en">News Briefs</span>
+        </h2>
+        <div class="section-line"></div>
+        <div class="section-badge">Briefs</div>
+      </div>
+
+      <!-- ===== BRIEF 1 (article-3): Preply Anti-Duolingo ===== -->
+      <div class="brief-card" id="article-3">
+        <div class="article-tag competitor">
+          <span class="article-tag-dot"></span>
+          <span class="toc-zh-tw">競業情報</span>
+          <span class="toc-en">Competitor Intel</span>
+          <span class="freshness-tag recent">Recent</span>
+        </div>
+
+        <div class="article-zh-tw">
+          <h4 class="brief-headline">Preply 打出「反 Duolingo」牌，AI 功能卻悄悄跟上</h4>
+          <p class="brief-summary" id="article-3-p-1">Preply 的策略很有意思：嘴上喊著「我們不是 AI 派」，手上卻悄悄把 AI 功能塞進產品裡。上週推出的「The Better Duo」行銷活動，主打真人家教與學生之間的情感連結——那種 AI 聊天機器人給不了的默契和幽默感。Preply 品牌長 Sofia Tavares 說得很巧妙：「我們不是反 AI，我們是挺人。」</p>
+          <p class="brief-summary" id="article-3-p-2">但同時間，Preply 也上線了三個 AI 驅動的新功能：Lesson Insights（AI 自動生成課後個人化摘要）、Daily Exercises（連結課程內容的每日小練習）、Scenario Practice（情境式口說練習，幫學生在課與課之間建立口說信心）。根據 Preply 2026 年效率研究，94% 的學習者表示流利度有提升，91% 在 24 堂課後對口說有信心。</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">化學觀點</div>
+            <p id="article-3-p-3">Preply 這招「打反 AI 旗號，做 AI 功能」根本是教科書級的定位操作。ChemistryTimes 手上有更深的真人家教資源，但 AI 輔助工具的落地速度不能輸。課後個人化摘要和情境練習這兩個功能，我們應該認真評估加入產品路線圖。</p>
+          </div>
+        </div>
+
+        <div class="article-en">
+          <h4 class="brief-headline">Preply Plays Anti-AI While Quietly Shipping AI Features</h4>
+          <p class="brief-summary">Preply launched "The Better Duo," a campaign designed to position the company as the human-centered antidote to Duolingo's AI-first pivot. Chief brand officer Sofia Tavares threaded the needle carefully: "We're not anti-AI. We're pro-human."</p>
+          <p class="brief-summary">The campaign highlighted real tutor-student pairs — relationships built on empathy, humor, and cultural exchange that chatbots can't replicate. Data from Preply's 2026 Efficiency Study claims learners progress three times faster than industry expectations, with 94% reporting improved fluency and 91% feeling confident speaking after 24-plus lessons.</p>
+          <p class="brief-summary">But here's the interesting part: alongside the pro-human marketing, Preply quietly shipped three AI-powered features. Lesson Insights generates personalized post-lesson summaries. Daily Exercises creates bite-sized practice tied to lesson content. Scenario Practice offers speaking exercises between sessions. The message is "humans first" — but the product is hybrid.</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">The ChemistryTimes Take</div>
+            <p>Preply's positioning is clever: own the "human" narrative while matching competitors on AI features. ChemistryTimes has deeper tutor networks than Preply, but we need to match the AI-assisted layer — post-lesson summaries and scenario practice should be on our product roadmap evaluation list.</p>
+          </div>
+        </div>
+
+        <div class="article-sources">
+          <div class="article-sources-label">
+            <span class="toc-zh-tw">來源</span>
+            <span class="toc-en">Sources</span>
+          </div>
+          <p><a href="https://www.edtechinnovationhub.com/news/preply-announces-new-ai-powered-features" target="_blank" rel="noopener">EdTech Innovation Hub</a></p>
+          <p><a href="https://lbbonline.com/news/Language-Learning-App-Preply-Centres-Humans-After-Duolingos-Move-Towards-AI" target="_blank" rel="noopener">LBBOnline</a></p>
+        </div>
+      </div>
+      <!-- ===== END BRIEF 1 ===== -->
+
+      <!-- ===== BRIEF 2 (article-4): Mastercard AI Model ===== -->
+      <div class="brief-card" id="article-4">
+        <div class="article-tag tech">
+          <span class="article-tag-dot"></span>
+          <span class="toc-zh-tw">科技趨勢</span>
+          <span class="toc-en">Tech &amp; AI</span>
+          <span class="freshness-tag breaking">Breaking</span>
+        </div>
+
+        <div class="article-zh-tw">
+          <h4 class="brief-headline">Mastercard 自建 AI 模型，用數十億筆交易資料抓詐騙</h4>
+          <p class="brief-summary" id="article-4-p-1">信用卡巨頭 Mastercard 今天宣布，他們不只是「用 AI」，而是直接自己蓋 AI——正在訓練一個大型表格模型（Large Tabular Model, LTM），跟 ChatGPT 那種文字模型不同，這個模型專門吃結構化數據，訓練資料是數十億筆去除個資的交易紀錄。</p>
+          <p class="brief-summary" id="article-4-p-2">應用場景鎖定五大方向：網路安全、忠誠計畫、個人化推薦、投資組合優化、數據分析。早期測試顯示，這個模型在降低誤判率（false positives）方面已經超越業界標準的 ML 技術。Mastercard 跟 NVIDIA、Databricks 合作打造這套系統，未來將透過 API 和工具包讓內部團隊存取。</p>
+          <p class="brief-summary" id="article-4-p-3">這個動作的意義在於：金融業不再只是 AI 的「消費者」，開始變成 AI 的「製造者」。</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">化學觀點</div>
+            <p id="article-4-p-4">Mastercard 做的事情跟 ChemistryTimes 的自適應學習模型有異曲同工之處：都是用大量行為數據去訓練專屬的 AI 模型。差別在於他們有數十億筆交易，我們有數百萬堂課的學習行為。這個方向值得追蹤。</p>
+          </div>
+        </div>
+
+        <div class="article-en">
+          <h4 class="brief-headline">Mastercard Builds Its Own AI Model — Trained on Billions of Transactions</h4>
+          <p class="brief-summary">Mastercard announced Monday it's building a generative AI foundation model trained on billions of anonymized transactions — not a language model, but a large tabular model (LTM) designed to work with structured payment data.</p>
+          <p class="brief-summary">The model targets five areas: cybersecurity, loyalty programs, personalization, portfolio optimization, and data analytics. Early testing shows it outperforms standard industry machine learning on reducing false positives — a critical metric in fraud detection. Mastercard partnered with Nvidia and Databricks to build the system and plans to distribute access through internal APIs and toolkits.</p>
+          <p class="brief-summary">The strategic signal: major financial institutions aren't waiting for AI labs to build models for them. They're training domain-specific models on proprietary data that no general-purpose LLM can replicate.</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">The ChemistryTimes Take</div>
+            <p>Mastercard's approach mirrors what ChemistryTimes should consider for adaptive learning: training specialized models on proprietary behavioral data. We have millions of lesson sessions worth of learning patterns. Worth tracking this trend.</p>
+          </div>
+        </div>
+
+        <div class="article-sources">
+          <div class="article-sources-label">
+            <span class="toc-zh-tw">來源</span>
+            <span class="toc-en">Sources</span>
+          </div>
+          <p><a href="https://www.mastercard.com/us/en/news-and-trends/stories/2026/mastercard-new-generative-ai-model.html" target="_blank" rel="noopener">Mastercard Official</a></p>
+          <p><a href="https://www.pymnts.com/artificial-intelligence-2/2026/mastercard-unveils-gen-ai-model-as-insights-engine-for-commerce/" target="_blank" rel="noopener">PYMNTS</a></p>
+        </div>
+      </div>
+      <!-- ===== END BRIEF 2 ===== -->
+
+      <!-- ===== BRIEF 3 (article-5): GitNexus ===== -->
+      <div class="brief-card" id="article-5">
+        <div class="article-tag github">
+          <span class="article-tag-dot"></span>
+          <span class="toc-zh-tw">GitHub 熱門</span>
+          <span class="toc-en">GitHub Trending</span>
+          <span class="freshness-tag breaking">Breaking</span>
+        </div>
+
+        <div class="article-zh-tw">
+          <h4 class="brief-headline">GitNexus 爆紅：零伺服器、純瀏覽器的程式碼知識圖譜引擎</h4>
+          <p class="brief-summary" id="article-5-p-1">今天的 GitHub 趨勢榜出現了一個有趣的東西：GitNexus，一個完全在瀏覽器端運行的程式碼智能引擎，不需要後端伺服器。它的核心賣點是把程式碼庫轉換成知識圖譜（Knowledge Graph），然後內建一個 Graph RAG Agent，讓開發者可以用自然語言問問題來理解程式碼結構。</p>
+          <p class="brief-summary" id="article-5-p-2">零伺服器架構意味著資料完全不離開用戶的瀏覽器——對重視程式碼安全的企業來說，這是一個巨大的加分項。不用擔心程式碼外洩到第三方伺服器，也不需要額外的基礎建設。</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">化學觀點</div>
+            <p id="article-5-p-3">像 GitNexus 這種零伺服器的程式碼理解工具，對內部程式碼庫的新人 onboarding 很有價值。ChemistryTimes 工程團隊可以試用看看。</p>
+          </div>
+        </div>
+
+        <div class="article-en">
+          <h4 class="brief-headline">GitNexus Hits GitHub Trending: A Browser-Only Code Intelligence Engine</h4>
+          <p class="brief-summary">GitNexus, built by abhigyanpatwari, landed on GitHub's trending page with a compelling pitch: turn any codebase into a navigable knowledge graph, entirely client-side. The tool runs in the browser with no backend server, which means source code never leaves the user's machine.</p>
+          <p class="brief-summary">Its standout feature is an integrated Graph RAG Agent that lets developers query their codebase using natural language — asking structural questions about dependencies, call flows, and architecture without manually tracing code paths.</p>
+          <p class="brief-summary">The zero-server approach makes it particularly appealing for enterprises with strict code security requirements. No data leaves the browser, no additional infrastructure needed.</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">The ChemistryTimes Take</div>
+            <p>A browser-based code exploration tool like GitNexus could help with onboarding new engineers to ChemistryTimes's codebase. Worth a trial run.</p>
+          </div>
+        </div>
+
+        <div class="article-sources">
+          <div class="article-sources-label">
+            <span class="toc-zh-tw">來源</span>
+            <span class="toc-en">Sources</span>
+          </div>
+          <p><a href="https://github.com/abhigyanpatwari/GitNexus" target="_blank" rel="noopener">GitHub — GitNexus</a></p>
+          <p><a href="https://aitoolly.com/ai-news/article/2026-03-17-gitnexus-a-revolutionary-zero-server-code-intelligence-engine-for-browser-based-knowledge-graph-crea" target="_blank" rel="noopener">AIToolly</a></p>
+        </div>
+      </div>
+      <!-- ===== END BRIEF 3 ===== -->
+
+      <!-- ===== BRIEF 4 (article-6): Claude Memory ===== -->
+      <div class="brief-card" id="article-6">
+        <div class="article-tag tech">
+          <span class="article-tag-dot"></span>
+          <span class="toc-zh-tw">科技趨勢</span>
+          <span class="toc-en">Tech &amp; AI</span>
+          <span class="freshness-tag breaking">Breaking</span>
+        </div>
+
+        <div class="article-zh-tw">
+          <h4 class="brief-headline">Claude 終於有記憶了，跨對話記住你是誰</h4>
+          <p class="brief-summary" id="article-6-p-1">每次跟 AI 聊天都要重新自我介紹，這個痛終於要結束了。Anthropic 在三月初正式向所有 Claude 用戶推出記憶功能——Claude 現在可以跨對話記住你的名字、寫作風格、偏好設定、甚至你正在進行的專案。以前每次開新對話都像失憶重來，現在 Claude 會自動帶入之前的上下文。</p>
+          <p class="brief-summary" id="article-6-p-2">這個功能直接對標 ChatGPT 的記憶功能（2024 年底對付費用戶開放），補齊了 Claude 在個人化體驗上的最大缺口。差異在於實作方式：Claude 的記憶系統強調用戶對記憶內容的控制權，可以查看、編輯和刪除被記住的內容。</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">化學觀點</div>
+            <p id="article-6-p-3">AI 記憶功能對教育場景的價值巨大——想像一個家教 AI 能記住學生的學習進度、弱點、偏好的學習方式。ChemistryTimes 在評估 AI 模型整合方案時，記憶功能的成熟度應該列為關鍵評估維度。</p>
+          </div>
+        </div>
+
+        <div class="article-en">
+          <h4 class="brief-headline">Claude Gets Memory — and Your AI Conversations Finally Have Continuity</h4>
+          <p class="brief-summary">Anthropic rolled out memory features to all Claude users in early March, letting the AI retain user preferences, writing styles, project context, and personal details across conversations. Previously, every new Claude session started from zero — no continuity, no accumulated understanding.</p>
+          <p class="brief-summary">The feature directly matches ChatGPT's memory capability, which OpenAI shipped to paid users in late 2024. Claude's implementation emphasizes user control: users can view, edit, and delete what Claude remembers. The differentiation is transparency over personalization depth.</p>
+          <p class="brief-summary">For enterprise applications, cross-conversation memory transforms AI from a stateless tool into something closer to a persistent collaborator — one that accumulates institutional knowledge with every interaction.</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">The ChemistryTimes Take</div>
+            <p>Cross-conversation memory is transformative for education. An AI tutor that remembers a student's progress, weaknesses, and preferred learning style is fundamentally different from one that starts fresh each session. Memory maturity should be a key evaluation criterion in our AI model integration roadmap.</p>
+          </div>
+        </div>
+
+        <div class="article-sources">
+          <div class="article-sources-label">
+            <span class="toc-zh-tw">來源</span>
+            <span class="toc-en">Sources</span>
+          </div>
+          <p><a href="https://www.labla.org/latest-ai-model-releases-past-24-hours/ai-model-releases-march-17-2026-claude-gets-memory-microsoft-pulls-back-and-the-race-continues/" target="_blank" rel="noopener">Labla.org</a></p>
+        </div>
+      </div>
+      <!-- ===== END BRIEF 4 ===== -->
+
+    </div>
+    <!-- end .article-content -->
+
+  </div>
+  <!-- end .article-layout -->
+
+
+  <!-- ============ JAVASCRIPT ============ -->
+  <script>
+    // --- Init language from query string ---
+    (function() {
+      var urlLang = new URLSearchParams(window.location.search).get('lang');
+      if (urlLang === 'en' || urlLang === 'zh-tw') {
+        document.body.dataset.lang = urlLang;
+        document.documentElement.lang = urlLang === 'zh-tw' ? 'zh-Hant' : 'en';
+      }
+    })();
+
+    // --- PostMessage listener for lang switching from shell ---
+    window.addEventListener('message', (e) => {
+      if (e.data?.type === 'lang-switch') {
+        document.body.dataset.lang = e.data.lang;
+        document.documentElement.lang = e.data.lang === 'zh-tw' ? 'zh-Hant' : 'en';
+      }
+    });
+
+    // --- TOC active state tracking ---
+    (function () {
+      var tocItems = document.querySelectorAll('.toc-item');
+      var articleSections = document.querySelectorAll('article[id^="article-"], div[id^="article-"]');
+
+      if (!tocItems.length || !articleSections.length) return;
+
+      function setActive(id) {
+        tocItems.forEach(function (item) {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'section-change', section: id }, '*');
+        }
+      }
+
+      // Activate on TOC link click — force active immediately
+      tocItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+          var href = item.getAttribute('href');
+          if (href) {
+            pendingClick = href.substring(1);
+            setActive(pendingClick);
+            // Clear pending after scroll settles
+            setTimeout(function () { pendingClick = null; }, 800);
+          }
+        });
+      });
+
+      // Scroll-based tracking — always pick the last section whose top has scrolled past the trigger line
+      var lastActiveId = '';
+      var pendingClick = null;
+      var ticking = false;
+
+      function updateActiveSection() {
+        // Skip if a TOC click is still settling
+        if (pendingClick) return;
+
+        var triggerY = window.innerHeight * 0.25;
+        var activeId = '';
+
+        // Walk all sections: the last one whose top is above the trigger line wins
+        for (var i = 0; i < articleSections.length; i++) {
+          var rect = articleSections[i].getBoundingClientRect();
+          if (rect.top <= triggerY) {
+            activeId = articleSections[i].id;
+          }
+        }
+
+        // If scrolled to very bottom, force the last section
+        if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 30) {
+          activeId = articleSections[articleSections.length - 1].id;
+        }
+
+        // If at the very top, force the first section
+        if (window.scrollY < 50 && articleSections.length) {
+          activeId = articleSections[0].id;
+        }
+
+        if (activeId && activeId !== lastActiveId) {
+          lastActiveId = activeId;
+          setActive(activeId);
+        }
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            updateActiveSection();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Initial check
+      updateActiveSection();
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+  <title>ChemistryTimes {{HEADLINE_SLUG}} — {{DATE}}</title>
+  <style>
+    /* ========================================
+       ChemistryTimes {{HEADLINE_SLUG}} — Issue #{{ISSUE_NUMBER}}
+       {{DATE}} | NYT Newspaper Style
+       (Iframe-embedded article layout)
+       ======================================== */
+
+    /* --- Reset & Base --- */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* NYT-inspired monochrome palette */
+      --bg-primary:     #fafaf8;
+      --bg-secondary:   #f5f4f2;
+      --text-primary:   #333333;
+      --text-secondary: #555555;
+      --text-muted:     #999999;
+      --text-inverse:   #333333;
+      --border-color:   #e2e2e2;
+      --border-light:   #eeeeee;
+      --border-heavy:   #121212;
+      --accent:         #121212;
+      --link-color:     #326891;
+      --shadow-sm:      none;
+      --shadow-md:      none;
+      --shadow-lg:      none;
+    }
+
+    /* Dark theme */
+    [data-theme="dark"] {
+      --bg-primary:     #1a1a1a;
+      --bg-secondary:   #242424;
+      --text-primary:   #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --text-muted:     #777777;
+      --text-inverse:   #e0e0e0;
+      --border-color:   #333333;
+      --border-light:   #2a2a2a;
+      --border-heavy:   #e0e0e0;
+      --accent:         #e0e0e0;
+      --link-color:     #6ca4d9;
+    }
+
+    :root {
+      /* Typography */
+      --font-serif-tc:  'Huninn', 'Noto Sans TC', sans-serif;
+      --font-sans-tc:   'Huninn', 'Noto Sans TC', sans-serif;
+      --font-sans-en:   'Huninn', 'Noto Sans TC', sans-serif;
+      --font-serif-en:  'Huninn', 'Noto Sans TC', sans-serif;
+      --font-mono:      "SF Mono", "Fira Code", Consolas, monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans-tc);
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    body[data-lang="en"] {
+      font-family: var(--font-sans-en);
+    }
+
+    /* --- Article Layout (flex: TOC + content) --- */
+    .article-layout {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0px 24px;
+    }
+
+    /* --- Sticky Margin TOC --- */
+    .article-toc {
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+      width: 160px;
+      min-width: 160px;
+      margin-right: 48px;
+      padding-top: 48px;
+    }
+
+    .toc-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      padding: 12px 0 6px 0;
+      font-family: var(--font-sans-en);
+    }
+
+    .toc-item {
+      display: block;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 6px 0 6px 12px;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      line-height: 1.4;
+      font-family: var(--font-sans-tc);
+    }
+
+    .toc-item:hover {
+      color: var(--text-primary);
+    }
+
+    .toc-item.active {
+      color: var(--text-primary);
+      border-left-color: var(--link-color);
+    }
+
+    /* --- Article Content --- */
+    .article-content {
+      max-width: 720px;
+      width: 100%;
+    }
+
+    /* --- Main wrapper (legacy, kept for footer spacing) --- */
+    .main {
+      background: var(--bg-primary);
+    }
+
+    /* --- Bilingual content switching --- */
+    .article-zh-tw,
+    .article-en {
+      display: none;
+    }
+
+    body[data-lang="zh-tw"] .article-zh-tw { display: block; }
+    body[data-lang="en"] .article-en { display: block; }
+
+    /* CN/EN elements in TOC */
+    .toc-zh-tw, .toc-en { display: none; }
+    body[data-lang="zh-tw"] .toc-zh-tw { display: block; }
+    body[data-lang="zh-tw"] .toc-en { display: none; }
+    body[data-lang="en"] .toc-zh-tw { display: none; }
+    body[data-lang="en"] .toc-en { display: block; }
+
+    /* Also handle inline toc-zh-tw/toc-en spans */
+    span.toc-zh-tw, span.toc-en { display: none; }
+    body[data-lang="zh-tw"] span.toc-zh-tw { display: inline; }
+    body[data-lang="en"] span.toc-en { display: inline; }
+
+    /* --- Section Divider --- */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0 24px;
+      padding-bottom: 10px;
+      border-bottom: 3px double var(--border-heavy);
+    }
+
+    .section-divider h2 {
+      font-family: var(--font-serif-en);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    body[data-lang="zh-tw"] .section-divider h2 {
+      font-family: var(--font-serif-tc);
+    }
+
+    .section-divider .section-line {
+      flex: 1;
+      height: 0;
+      background: transparent;
+    }
+
+    .section-divider .section-badge {
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-family: var(--font-sans-en);
+    }
+
+    /* --- Article Card --- */
+    .article-card {
+      background: var(--bg-primary);
+      border-radius: 3px;
+      box-shadow: none;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      overflow: visible;
+      transition: none;
+    }
+
+    .article-card:hover {
+      box-shadow: none;
+    }
+
+    .article-card-header {
+      padding: 0 0 0;
+    }
+
+    .article-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-tag.competitor {
+      color: var(--text-muted);
+    }
+
+    .article-tag.tech {
+      color: var(--text-muted);
+    }
+
+    .article-tag.github {
+      color: var(--text-muted);
+    }
+
+    .article-tag-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .article-tag.competitor .article-tag-dot { background: var(--text-muted); }
+    .article-tag.tech .article-tag-dot { background: var(--text-muted); }
+    .article-tag.github .article-tag-dot { background: var(--text-muted); }
+
+    .article-card-body {
+      padding: 0;
+    }
+
+    /* --- Article Content (bilingual) --- */
+    .article-headline {
+      font-family: var(--font-serif-en);
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--accent);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    body[data-lang="zh-tw"] .article-headline {
+      font-family: var(--font-serif-tc);
+    }
+
+    .article-deck {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .article-body {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .article-body p {
+      margin-bottom: 16px;
+    }
+
+    .article-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .article-body h4 {
+      font-family: var(--font-serif-en);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    body[data-lang="zh-tw"] .article-body h4 {
+      font-family: var(--font-serif-tc);
+    }
+
+    .article-body h4:first-child {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    /* --- Perspective --- */
+    .article-perspective {
+      margin-top: 24px;
+      padding: 20px 24px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent);
+      border-radius: 3px;
+    }
+
+    .article-perspective-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 8px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-perspective p {
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* --- Source Attribution --- */
+    .article-sources {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .article-sources-label {
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-family: var(--font-sans-en);
+    }
+
+    .article-sources p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .article-sources a {
+      color: var(--link-color);
+      text-decoration: none;
+    }
+
+    .article-sources a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Freshness Tags --- */
+    .freshness-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 400;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: var(--font-sans-en);
+    }
+
+    .freshness-tag.breaking {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--text-primary);
+    }
+
+    .freshness-tag.recent {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border: 1px solid var(--text-muted);
+    }
+
+    .freshness-tag.not-breaking {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* --- News Brief (compact card) --- */
+    .brief-card {
+      background: var(--bg-primary);
+      border-radius: 3px;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      padding: 24px 0;
+      margin-bottom: 0;
+      transition: none;
+    }
+
+    .brief-card:hover {
+      box-shadow: none;
+    }
+
+    .brief-card .article-tag {
+      margin-bottom: 8px;
+    }
+
+    .brief-headline {
+      font-family: var(--font-serif-en);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--accent);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    body[data-lang="zh-tw"] .brief-headline {
+      font-family: var(--font-serif-tc);
+    }
+
+    .brief-summary {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .brief-card .article-sources {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .brief-card .article-perspective {
+      margin-top: 16px;
+    }
+
+    /* --- AI Badge --- */
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      margin-top: 8px;
+      font-family: var(--font-sans-en);
+    }
+
+    .ai-badge .ai-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* --- Pillar Badge (kept for article tags) --- */
+    .pillar-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .pillar-badge.competitor {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .pillar-badge.tech {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 1279px) {
+      .article-toc {
+        display: none;
+      }
+
+      .article-content {
+        max-width: 100%;
+      }
+    }
+
+    @media (min-width: 1280px) and (max-width: 1439px) {
+      .article-content {
+        max-width: 640px;
+      }
+    }
+
+    /* --- Utility --- */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* --- Print --- */
+    @media print {
+      .article-toc {
+        display: none !important;
+      }
+
+      .article-card {
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body data-lang="zh-tw">
+
+  <!-- ============ ARTICLE LAYOUT ============ -->
+  <div class="article-layout">
+
+    <!-- Sticky Margin TOC -->
+    <nav class="article-toc" role="navigation" aria-label="Table of contents">
+
+      <!-- {{TOC_ENTRIES_START}}
+           Repeat this block for each pillar/section and its articles.
+
+           Example pillar label:
+           <div class="toc-label toc-zh-tw">科技趨勢</div>
+           <div class="toc-label toc-en">Tech &amp; AI</div>
+
+           Example article TOC item (one per article):
+           <a href="#article-{N}" class="toc-item toc-zh-tw">{{ARTICLE_N_HEADLINE_CN}}</a>
+           <a href="#article-{N}" class="toc-item toc-en">{{ARTICLE_N_HEADLINE_EN}}</a>
+
+           Example briefs section label:
+           <div class="toc-label toc-zh-tw">快訊</div>
+           <div class="toc-label toc-en">Briefs</div>
+
+           {{TOC_ENTRIES_END}} -->
+
+    </nav>
+
+    <!-- Article Content -->
+    <div class="article-content">
+
+      <!-- {{PILLAR_SECTIONS_START}}
+           Repeat one section-divider + article blocks per content pillar.
+
+           Example section divider:
+           ============================
+           PILLAR: {{PILLAR_NAME}}
+           ============================ -->
+
+      <!-- ===== Section Divider ===== -->
+      <!--
+      <div class="section-divider" id="pillar-{{PILLAR_SLUG}}">
+        <h2>
+          <span class="toc-zh-tw">{{PILLAR_LABEL_CN}}</span>
+          <span class="toc-en">{{PILLAR_LABEL_EN}}</span>
+        </h2>
+        <div class="section-line"></div>
+        <div class="section-badge">Deep Dives</div>
+      </div>
+      -->
+
+      <!-- ===== DEEP DIVE ARTICLE TEMPLATE =====
+      Repeat this block for each Deep Dive article. Replace {N} with sequential number.
+
+      <article class="article-card" id="article-{N}">
+        <div class="article-card-header">
+          <div class="article-tag {{TAG_CLASS}}">
+            <span class="article-tag-dot"></span>
+            <span class="toc-zh-tw">{{TAG_LABEL_CN}}</span>
+            <span class="toc-en">{{TAG_LABEL_EN}}</span>
+            <span class="freshness-tag {{FRESHNESS_CLASS}}">{{FRESHNESS_LABEL}}</span>
+          </div>
+        </div>
+        <div class="article-card-body">
+
+          <div class="article-zh-tw">
+            <h3 class="article-headline">{{HEADLINE_CN}}</h3>
+            <p class="article-deck" id="article-{N}-p-1">{{DECK_CN}}</p>
+            <div class="article-body">
+              <p id="article-{N}-p-2">{{BODY_CN_P1}}</p>
+              <p id="article-{N}-p-3">{{BODY_CN_P2}}</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">化學觀點</div>
+              <p id="article-{N}-p-{LAST}">{{PERSPECTIVE_CN}}</p>
+            </div>
+          </div>
+
+          <div class="article-en">
+            <h3 class="article-headline">{{HEADLINE_EN}}</h3>
+            <p class="article-deck">{{DECK_EN}}</p>
+            <div class="article-body">
+              <p>{{BODY_EN_P1}}</p>
+              <p>{{BODY_EN_P2}}</p>
+            </div>
+            <div class="article-perspective">
+              <div class="article-perspective-label">The ChemistryTimes Take</div>
+              <p>{{PERSPECTIVE_EN}}</p>
+            </div>
+          </div>
+
+          <div class="article-sources">
+            <div class="article-sources-label">
+              <span class="toc-zh-tw">來源</span>
+              <span class="toc-en">Sources</span>
+            </div>
+            <p><a href="{{SOURCE_URL_1}}" target="_blank" rel="noopener">{{SOURCE_NAME_1}}</a></p>
+            <p><a href="{{SOURCE_URL_2}}" target="_blank" rel="noopener">{{SOURCE_NAME_2}}</a></p>
+          </div>
+        </div>
+      </article>
+      ===== END DEEP DIVE ARTICLE TEMPLATE ===== -->
+
+
+      <!-- ===== NEWS BRIEFS SECTION =====
+      <div class="section-divider" id="pillar-briefs">
+        <h2>
+          <span class="toc-zh-tw">快訊</span>
+          <span class="toc-en">News Briefs</span>
+        </h2>
+        <div class="section-line"></div>
+        <div class="section-badge">Briefs</div>
+      </div>
+      -->
+
+      <!-- ===== BRIEF ARTICLE TEMPLATE =====
+      Repeat this block for each News Brief. Continue sequential {N} from Deep Dives.
+
+      <div class="brief-card" id="article-{N}">
+        <div class="article-tag {{TAG_CLASS}}">
+          <span class="article-tag-dot"></span>
+          <span class="toc-zh-tw">{{TAG_LABEL_CN}}</span>
+          <span class="toc-en">{{TAG_LABEL_EN}}</span>
+          <span class="freshness-tag {{FRESHNESS_CLASS}}">{{FRESHNESS_LABEL}}</span>
+        </div>
+
+        <div class="article-zh-tw">
+          <h4 class="brief-headline">{{BRIEF_HEADLINE_CN}}</h4>
+          <p class="brief-summary" id="article-{N}-p-1">{{BRIEF_SUMMARY_CN_P1}}</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">化學觀點</div>
+            <p id="article-{N}-p-{LAST}">{{BRIEF_PERSPECTIVE_CN}}</p>
+          </div>
+        </div>
+
+        <div class="article-en">
+          <h4 class="brief-headline">{{BRIEF_HEADLINE_EN}}</h4>
+          <p class="brief-summary">{{BRIEF_SUMMARY_EN_P1}}</p>
+          <div class="article-perspective">
+            <div class="article-perspective-label">The ChemistryTimes Take</div>
+            <p>{{BRIEF_PERSPECTIVE_EN}}</p>
+          </div>
+        </div>
+
+        <div class="article-sources">
+          <div class="article-sources-label">
+            <span class="toc-zh-tw">來源</span>
+            <span class="toc-en">Sources</span>
+          </div>
+          <p><a href="{{SOURCE_URL_1}}" target="_blank" rel="noopener">{{SOURCE_NAME_1}}</a></p>
+        </div>
+      </div>
+      ===== END BRIEF ARTICLE TEMPLATE ===== -->
+
+      <!-- {{PILLAR_SECTIONS_END}} -->
+
+    </div>
+    <!-- end .article-content -->
+
+  </div>
+  <!-- end .article-layout -->
+
+
+  <!-- ============ JAVASCRIPT ============ -->
+  <script>
+    // --- Init language and theme from query string ---
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var urlLang = params.get('lang');
+      if (urlLang === 'en' || urlLang === 'zh-tw') {
+        document.body.dataset.lang = urlLang;
+        document.documentElement.lang = urlLang === 'zh-tw' ? 'zh-Hant' : 'en';
+      }
+      var urlTheme = params.get('theme');
+      if (urlTheme === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+
+    // --- PostMessage listener for lang switching from shell ---
+    window.addEventListener('message', (e) => {
+      if (e.data?.type === 'lang-switch') {
+        document.body.dataset.lang = e.data.lang;
+        document.documentElement.lang = e.data.lang === 'zh-tw' ? 'zh-Hant' : 'en';
+      }
+      if (e.data?.type === 'theme-switch') {
+        if (e.data.theme === 'dark') {
+          document.documentElement.dataset.theme = 'dark';
+        } else {
+          delete document.documentElement.dataset.theme;
+        }
+      }
+    });
+
+    // --- TOC active state tracking ---
+    (function () {
+      var tocItems = document.querySelectorAll('.toc-item');
+      var articleSections = document.querySelectorAll('article[id^="article-"], div[id^="article-"]');
+
+      if (!tocItems.length || !articleSections.length) return;
+
+      function setActive(id) {
+        tocItems.forEach(function (item) {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'section-change', section: id }, '*');
+        }
+      }
+
+      // Activate on TOC link click -- force active immediately
+      tocItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+          var href = item.getAttribute('href');
+          if (href) {
+            pendingClick = href.substring(1);
+            setActive(pendingClick);
+            // Clear pending after scroll settles
+            setTimeout(function () { pendingClick = null; }, 800);
+          }
+        });
+      });
+
+      // Scroll-based tracking -- always pick the last section whose top has scrolled past the trigger line
+      var lastActiveId = '';
+      var pendingClick = null;
+      var ticking = false;
+
+      function updateActiveSection() {
+        // Skip if a TOC click is still settling
+        if (pendingClick) return;
+
+        var triggerY = window.innerHeight * 0.25;
+        var activeId = '';
+
+        // Walk all sections: the last one whose top is above the trigger line wins
+        for (var i = 0; i < articleSections.length; i++) {
+          var rect = articleSections[i].getBoundingClientRect();
+          if (rect.top <= triggerY) {
+            activeId = articleSections[i].id;
+          }
+        }
+
+        // If scrolled to very bottom, force the last section
+        if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 30) {
+          activeId = articleSections[articleSections.length - 1].id;
+        }
+
+        // If at the very top, force the first section
+        if (window.scrollY < 50 && articleSections.length) {
+          activeId = articleSections[0].id;
+        }
+
+        if (activeId && activeId !== lastActiveId) {
+          lastActiveId = activeId;
+          setActive(activeId);
+        }
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            updateActiveSection();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Initial check
+      updateActiveSection();
+    })();
+  </script>
+
+</body>
+</html>

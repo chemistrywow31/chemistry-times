@@ -1,0 +1,8 @@
+.DS_Store
+.env
+.mongo-data/
+chemistrytimes
+
+# Uploaded article files (runtime data, not tracked)
+web/static/articles/[0-9][0-9][0-9][0-9]/
+web/static/articles/backup-old-ui/
