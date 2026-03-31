@@ -21,6 +21,6 @@ WORKDIR /app
 COPY --from=builder /app/chemistrytimes .
 COPY --from=builder /app/web ./web
 
-EXPOSE 8080
+EXPOSE 17171
 
 CMD ["./chemistrytimes"]
