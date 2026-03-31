@@ -45,6 +45,7 @@ func (h *UploadHandler) Upload(c *gin.Context) {
 		".css": true, ".js": true,
 		".png": true, ".jpg": true, ".jpeg": true,
 		".gif": true, ".webp": true, ".svg": true,
+		".mp3": true, ".wav": true, ".ogg": true,
 	}
 	if !allowed[ext] {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("file type %s not allowed", ext)})

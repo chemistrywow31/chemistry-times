@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"ChemistryTimes/internal/handler"
+	"ChemistryTimes/internal/middleware"
 	"ChemistryTimes/internal/repository"
 
 	"github.com/gin-gonic/gin"
@@ -46,6 +47,8 @@ func main() {
 
 	r.LoadHTMLGlob("web/templates/*")
 
+	auth := middleware.RequireAPIKey()
+
 	ct := r.Group("/chemistry-times")
 	{
 		ct.Static("/static", "./web/static")
@@ -55,12 +58,13 @@ func main() {
 
 		api := ct.Group("/api")
 		{
-			api.POST("/articles", articleHandler.Create)
-			api.PATCH("/articles/:id", articleHandler.Update)
-			api.DELETE("/articles/:id", articleHandler.Delete)
 			api.GET("/articles", articleHandler.List)
 			api.GET("/articles/:id", articleHandler.GetByID)
-			api.POST("/upload", uploadHandler.Upload)
+
+			api.POST("/articles", auth, articleHandler.Create)
+			api.PATCH("/articles/:id", auth, articleHandler.Update)
+			api.DELETE("/articles/:id", auth, articleHandler.Delete)
+			api.POST("/upload", auth, uploadHandler.Upload)
 		}
 	}
 
@@ -73,10 +77,11 @@ func main() {
 
 		api := cgt.Group("/api")
 		{
-			api.POST("/articles", gameArticleHandler.Create)
-			api.DELETE("/articles/:id", gameArticleHandler.Delete)
 			api.GET("/articles", gameArticleHandler.List)
 			api.GET("/articles/:id", gameArticleHandler.GetByID)
+
+			api.POST("/articles", auth, gameArticleHandler.Create)
+			api.DELETE("/articles/:id", auth, gameArticleHandler.Delete)
 		}
 	}
 

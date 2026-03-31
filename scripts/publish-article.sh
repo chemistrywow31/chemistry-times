@@ -7,8 +7,11 @@
 #   date     — publish date in YYYY-MM-DD format
 #   BASE_URL — optional, default http://localhost:17171
 #
+# Environment:
+#   API_KEY  — required, the server API key for mutation endpoints
+#
 # Example:
-#   ./scripts/publish-article.sh web/static/articles/2026/03/chemistry-times-20260325.html "化學時報 2026-03-25" 2026-03-25
+#   API_KEY=your-key ./scripts/publish-article.sh web/static/articles/2026/03/chemistry-times-20260325.html "化學時報 2026-03-25" 2026-03-25
 
 set -euo pipefail
 
@@ -18,6 +21,11 @@ DATE="${3:?Usage: $0 <file> <title> <date> [BASE_URL]}"
 BASE="${4:-http://localhost:17171}"
 API="$BASE/chemistry-times/api"
 
+if [ -z "${API_KEY:-}" ]; then
+  echo "Error: API_KEY environment variable is required" >&2
+  exit 1
+fi
+
 if [ ! -f "$FILE" ]; then
   echo "Error: file not found: $FILE" >&2
   exit 1
@@ -25,7 +33,7 @@ fi
 
 # Step 1: Upload file
 echo "Uploading $FILE ..."
-UPLOAD_RESP=$(curl -s -X POST "$API/upload" -F "file=@$FILE")
+UPLOAD_RESP=$(curl -s -X POST "$API/upload" -H "X-API-Key: $API_KEY" -F "file=@$FILE")
 
 URL=$(echo "$UPLOAD_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['url'])" 2>/dev/null)
 if [ -z "$URL" ]; then
@@ -38,6 +46,7 @@ echo "Uploaded: $URL"
 echo "Registering article ..."
 CREATE_RESP=$(curl -s -X POST "$API/articles" \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: $API_KEY" \
   -d "{\"title\":\"$TITLE\",\"url\":\"$URL\",\"date\":\"$DATE\"}")
 
 ID=$(echo "$CREATE_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null)

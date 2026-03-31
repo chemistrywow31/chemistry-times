@@ -1,0 +1,5 @@
+# ChemistryTimes Post Uploader Configuration
+
+# Server upload configuration
+server:
+  upload_url: "http://localhost:17171/chemistry-times/api/upload"

@@ -46,25 +46,27 @@ Two channels share the same Article model but use separate collections:
 | `MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string |
 | `DB_NAME` | `chemistrytimes` | Database name |
 | `PORT` | `17171` | Server port |
+| `API_KEY` | *(required)* | API key for mutation endpoints (POST/PATCH/DELETE) |
 
 ## API
 
 All endpoints are under `/chemistry-times/api` and `/chemistry-game-times/api`:
 - `GET /articles?page=1&limit=10` — List (newest first)
-- `POST /articles` — Create (`{"title":"...","url":"...","date":"YYYY-MM-DD"}`) — all three fields required
+- `POST /articles` — Create (`{"title":"...","url":"...","date":"YYYY-MM-DD"}`) — requires `X-API-Key` header
 - `GET /articles/:id` — Get by ID
-- `DELETE /articles/:id` — Delete
-- `POST /upload` — Upload article HTML file (multipart form, field: `file`)
+- `PATCH /articles/:id` — Update — requires `X-API-Key` header
+- `DELETE /articles/:id` — Delete — requires `X-API-Key` header
+- `POST /upload` — Upload article HTML file (multipart form, field: `file`) — requires `X-API-Key` header
 
 ## Upload
 
 Use the publish script to upload and register an article in one step:
 
 ```bash
-./scripts/publish-article.sh <file> <title> <date> [BASE_URL]
+API_KEY=your-key ./scripts/publish-article.sh <file> <title> <date> [BASE_URL]
 
 # Example
-./scripts/publish-article.sh web/static/articles/2026/03/chemistry-times-20260325.html "化學時報 2026-03-25" 2026-03-25
+API_KEY=your-key ./scripts/publish-article.sh web/static/articles/2026/03/chemistry-times-20260325.html "化學時報 2026-03-25" 2026-03-25
 ```
 
 The script handles upload + MongoDB registration automatically. Do not call the APIs manually.
@@ -89,6 +91,6 @@ Each section supports Deep Dive (full `article-card`) and Brief (`brief-card`) f
 ## Gotchas
 
 - `docker-compose.yml` port must match `PORT` env var (default 17171)
-- No auth on API — internal use only
+- Mutation APIs (POST/PATCH/DELETE) require `X-API-Key` header; GET endpoints are public
 - Frontend is vanilla JS served by Go templates, not a separate build step
 - Article URLs use relative paths with year/month nesting (e.g., `/chemistry-times/static/articles/2026/03/chemistry-times-20260319.html`)
