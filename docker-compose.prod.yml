@@ -1,28 +1,59 @@
-version: "3.3"
+# =============================================================================
+# ChemistryTimes — Production
+#
+# Joins cddn-network so the shared nginx can reverse-proxy to ct-app.
+# No own nginx/certbot — SSL is handled by cddn's nginx stack.
+#
+# Deploy:
+#   IMAGE_TAG=<tag> docker compose -f docker-compose.prod.yml up -d
+# =============================================================================
 
 services:
   app:
-    image: ${REGISTRY:-registry.example.com}/chemistry-times:${IMAGE_TAG}
-    ports:
-      - "17171:17171"
+    image: wow31/chemistry-times:${IMAGE_TAG}
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ct-app
+    env_file: .env
     environment:
-      - MONGO_URI=mongodb://mongo:27017
+      - MONGO_URI=mongodb://ct-mongo:27017
       - DB_NAME=chemistrytimes
       - PORT=17171
       - GIN_MODE=release
     volumes:
       - ./web/static/articles:/app/web/static/articles
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - ct-network
+      - cddn-network
 
   mongo:
     image: mongo:7
+    container_name: ct-mongo
     volumes:
-      - /data/mongo:/data/db
+      - ct-mongo-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
+      interval: 30s
       timeout: 5s
       retries: 5
+      start_period: 15s
     restart: unless-stopped
+    networks:
+      - ct-network
+
+volumes:
+  ct-mongo-data:
+    driver: local
+
+networks:
+  ct-network:
+    driver: bridge
+  cddn-network:
+    external: true
+    name: cddn_cddn-network
