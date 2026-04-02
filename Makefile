@@ -1,7 +1,10 @@
-.PHONY: mongo mongo-stop mongo-clean run build
+.PHONY: setup mongo mongo-stop mongo-clean run build
 
 MONGO_CONTAINER := chemistrytimes-mongo
 MONGO_PORT := 27017
+
+setup:
+	@test -f .env || (cp .env.example .env && echo "Created .env from .env.example")
 
 mongo:
 	@docker start $(MONGO_CONTAINER) 2>/dev/null || \
@@ -20,8 +23,8 @@ mongo-clean: mongo-stop
 	@rm -rf .mongo-data
 	@echo "MongoDB container and data removed"
 
-run: mongo
-	go run .
+run: setup mongo
+	@set -a && . ./.env && set +a && go run .
 
 build:
 	go build -o chemistrytimes .

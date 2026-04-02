@@ -2,18 +2,34 @@
 
 內部電子報系統。Go + MongoDB，文章以 iframe 嵌入瀏覽。
 
+## Quick Start
+
+```bash
+# Option 1: Docker Compose (recommended, zero setup)
+docker compose up -d --build
+# → http://localhost:17171/chemistry-times
+
+# Option 2: Local Go + MongoDB via Make
+make run
+# → starts MongoDB in Docker, runs Go app with .env loaded
+
+# Option 3: Manual
+cp .env.example .env          # edit API_KEY if needed
+docker run -d -p 27017:27017 mongo:7
+go run .
+```
+
 ## Commands
 
 ```bash
-# Local dev (Docker Compose)
-docker compose up -d --build
-docker compose down
-
-# Run directly (requires local MongoDB)
-go run .
-
-# Build
-go build -o chemistrytimes .
+make setup        # create .env from .env.example (if not exists)
+make run          # start MongoDB + run Go app
+make build        # compile binary
+make mongo        # start MongoDB only
+make mongo-stop   # stop MongoDB
+make mongo-clean  # remove MongoDB container + data
+docker compose up -d --build   # full stack via Docker
+docker compose down            # stop all
 ```
 
 ## Architecture

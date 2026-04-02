@@ -1,18 +1,18 @@
-version: "3.3"
-
 services:
   app:
     build: .
     ports:
       - "17171:17171"
-    env_file: .env
     environment:
       - MONGO_URI=mongodb://mongo:27017
-      - GIN_MODE=release
+      - DB_NAME=chemistrytimes
+      - PORT=17171
+      - API_KEY=${API_KEY:-dev-api-key-change-me}
     volumes:
       - ./web/static/articles:/app/web/static/articles
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     restart: unless-stopped
 
   mongo:

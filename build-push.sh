@@ -15,7 +15,8 @@ PLATFORM="linux/amd64"
 IMAGE_TAG=$(date +%Y%m%d-%H%M%S)
 export IMAGE_TAG
 
-IMAGE="wow31/chemistry-times:${IMAGE_TAG}"
+REGISTRY="${REGISTRY:-your-dockerhub-user}"
+IMAGE="${REGISTRY}/chemistry-times:${IMAGE_TAG}"
 
 echo "==> Platform: ${PLATFORM}"
 echo "==> Tag:      ${IMAGE_TAG}"

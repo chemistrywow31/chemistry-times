@@ -1,4 +1,14 @@
 .git
 .idea
 .claude
+.env
+.env.*
+!.env.example
+.mongo-data
+.DS_Store
+.worklog
+deploy/
+certbot/
+claude_agents/
+*.mp3
 README.md
